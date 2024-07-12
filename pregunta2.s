@@ -1,39 +1,38 @@
 .data
-n: .word 5             @ Cambia este valor según el número de discos que deseas probar
-msg: .asciz "el numero de movimientos es"
+num_discos: .word 3        @ Variable para almacenar el número de discos
+
 .text
 .global main
 
 main:
-	mov r0, #0
-	mov r1, #0
-	ldr r2, =msg
-	bl printString
-        ldr r0, =n          @ Cargar la dirección de n en R0
-        ldr r1, [r0]        @ Cargar el valor de n en R1
+    @ Inicialización
+    ldr r0, =num_discos   @ R0 contendrá la dirección de num_discos
+    ldr r1, [r0]          @ Cargar el número de discos en R1
 
-        mov r2, #1          @ Inicializa R2 a 1 (2^0)
-        mov r3, #0          @ Inicializa R3 a 0 (contador de bucles)
+    @ Llamando  a la función recursiva para resolver la Torre de Hanoi
+    bl hanoi
 
-loop:
-        cmp r3, r1          @ Comparar el contador con n
-        beq end_loop        @ Si son iguales, sal del bucle
-        lsl r2, r2, #1      @ Multiplica R2 por 2 (equivalente a 2^i)
-        add r3, r3, #1      @ Incrementa el contador
-        b loop
+   
+    mov r0, r2            @ R0 contendrá el resultado (cantidad de movimientos)
+    bl printInt           @ Llamar a la función para imprimir un entero
+    bx lr                 @ Regresar
 
-end_loop:
-	b end
+hanoi:
+    @ Función recursiva para resolver la Torre de Hanoi
+    push {lr, r1, r3}     @ Guardar el link register y los registros usados
 
-end:
-        sub r2, r2, #1      @ Resta 1 para obtener 2^n - 1
+    cmp r1, #1            @ Caso base: si solo hay un disco, se realiza un movimiento
+    beq base_case
 
-        @ Mostrar el resultado en consola (QtARMSim)
-        @ Llamada al sistema para escribir
-        mov r2, r2         
-    	mov r0, #0         @ En r0 almacenamos la posición en x de donde queremos printear
-    	mov r1, #2         @ En r1 almacenamos la posición en y de donde queremos printear
-    	bl printInt        @ Finalmente llamamos a la función para printear enteros
-    	wfi
+    @ Caso recursivo: T(n) = 2 * T(n-1) + 1
+    sub r1, r1, #1        @ n-1
+    bl hanoi              @ Llamada recursiva para T(n-1)
+    mov r3, r2            @ Guardar el resultado de T(n-1) en R3
 
-	
+    lsl r3, r3, #1        @ Multiplicar por 2
+    add r2, r3, #1        @ T(n) = 2 * T(n-1) + 1
+    pop {r3, r1, pc}      @ Restaurar los registros y regresar
+
+base_case:
+    mov r2, #1            @ Si hay un solo disco, se necesita un movimiento
+    pop {r3, r1, pc}      @ Restaurar los registros y regresar
