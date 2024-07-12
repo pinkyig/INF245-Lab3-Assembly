@@ -1,8 +1,10 @@
-**Datos de los estudiantes**
+## **Integrantes**
 
-Nombres y rol usm: Alejandro Rojo 202130524-6 y Brayan Olivares.
+Integrentes: Alejandro Rojo y Bryan Olivares
 
-Paralelo: 201
+Roles: 202130524-6 y 202173571-2
+
+Paralelo 201
 
 
 
